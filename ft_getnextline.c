@@ -13,7 +13,15 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-int	get_line_length(char *line)
+char	**check_contents(char *line)
+{
+	char	**lines;
+
+	lines = ft_strsplit(line, '\n');
+	return (lines);
+}
+
+int		get_line_length(char *line)
 {
 	int		len;
 
@@ -25,27 +33,32 @@ int	get_line_length(char *line)
 	return (len);
 }
 
-int	get_next_line(const int fd, char **line)
+int		get_next_line(const int fd, char **line)
 {
-	int		len;
-	char	*buf;
+	int			len;
+	static char	*buf;
+	static char	*saved;
 
+
+	// *line = ft_memalloc(BUFF_SIZE); //result line
 	buf = ft_memalloc(BUFF_SIZE); //what you read into
+	// *line = ft_memalloc(BUFF_SIZE); //result line
+	saved = ft_memalloc(BUFF_SIZE);
 	*line = ft_memalloc(BUFF_SIZE); //result line
-	read(fd, buf, BUFF_SIZE);
-	len = get_line_length(buf);
-	if (len == BUFF_SIZE)
+
+	while(read(fd, buf, BUFF_SIZE) > 0)
 	{
-		ft_strcat(*line, buf);
-		//repeat again
+		len = get_line_length(buf);
+		if (len == BUFF_SIZE)
+		{
+			ft_strcat(*line, buf);
+		}
+		else if (len < BUFF_SIZE)
+		{
+			ft_strncat(*line, buf, len);
+			return (0);
+		}
 	}
-	else if (len < BUFF_SIZE)
-	{
-		ft_strncat(*line, buf, len);
-		return (0);
-	}
-	printf("%d", len);
-	printf("%s\n", buf);
 	close(fd);
 	return (0);
 }
