@@ -23,7 +23,6 @@ int	main(int argc, char **argv)
 	printf("the next line is: %s\n", *line);
 	get_next_line(fd, line);
 	printf("the next line is: %s\n", *line);
-
 	// printf("%s\n", *line);
 	//get_next_line(fd, line);
 	// printf("%s\n", *line);
