@@ -15,14 +15,11 @@ int	main(int argc, char **argv)
 
 	line = ft_memalloc(1);
 	fd = open(argv[1], O_RDONLY);
-	get_next_line(fd, line);
-	printf("the next line is: %s\n", *line);
-	get_next_line(fd, line);
-	printf("the next line is: %s\n", *line);
-	get_next_line(fd, line);
-	printf("the next line is: %s\n", *line);
-	get_next_line(fd, line);
-	printf("the next line is: %s\n", *line);
+	while(get_next_line(fd, line) == 0)
+	{
+	//	get_next_line(fd, line);
+		printf("the next line is: %s\n", *line);
+	}
 	// printf("%s\n", *line);
 	//get_next_line(fd, line);
 	// printf("%s\n", *line);

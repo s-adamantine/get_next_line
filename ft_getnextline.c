@@ -61,26 +61,22 @@ int		get_next_line(const int fd, char **line)
 		len = get_line_length(buf);
 		if (len == BUFF_SIZE - 1)
 		{
-			if (ft_strlen(*line) == 0) 				//the beginning of *line
+			if (ft_strlen(*line) == 0) 	//the beginning of *line
 			{
-				ft_strlcat(*line, buf, BUFF_SIZE);
+				ft_strcat(*line, buf);
 			}
 			else
 			{
-				ft_strncat(*line, buf, BUFF_SIZE);
 				*line = expand_line(*line);
-				printf("line is: %s\n", *line);
+				ft_strcat(*line, buf);
 			}
 		}
 		else if (len < BUFF_SIZE - 1)
 		{
 			*line = expand_line(*line); //why does this function work even w/o this line
-			printf("line right before: %s\n", *line);
 			ft_strncat(*line, buf, len);
-			printf("line right after: %s\n", *line);
 			return (0);
 		}
 	}
-	close(fd);
-	return (0);
+	return (-1);
 }
