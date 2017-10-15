@@ -17,12 +17,8 @@ int	main(int argc, char **argv)
 	fd = open(argv[1], O_RDONLY);
 	while(get_next_line(fd, line) == 0)
 	{
-	//	get_next_line(fd, line);
 		printf("the next line is: %s\n", *line);
 	}
-	// printf("%s\n", *line);
-	//get_next_line(fd, line);
-	// printf("%s\n", *line);
 	close(fd);
 	return (0);
 }

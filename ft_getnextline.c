@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 /*
-	Current task: figuring out how to expand the line properly w/ malloc
-	Next: grab whatever is inside the buffer.
+	Current task: refactor check contents and add it
+	Next:
 */
 
 #include "get_next_line.h"
@@ -22,7 +22,10 @@ char	**check_contents(char *line)
 {
 	char	**lines;
 
-	lines = ft_strsplit(line, '\n');
+	if (*line == '\0')
+		return (NULL);
+	else
+		lines = ft_strsplit(line, '\n');
 	return (lines);
 }
 
@@ -51,12 +54,27 @@ char	*expand_line(char *line)
 int		get_next_line(const int fd, char **line)
 {
 	int			len;
-	char		*line2;
+	char		**saved;
+	char		*temp;
 	static char	*buf;
 
 	*line = ft_memalloc(BUFF_SIZE); //result line
+	if (buf)
+	{
+		printf("buf exists. it contains:%s\n", buf);
+		saved = check_contents(buf);
+		printf("saved[1] exists. it contains: %s\n", saved[1]);
+		ft_strcpy(*line, saved[1]);
+		if (ft_strcpy)
+		if (saved[2])
+		{
+			ft_strcpy(buf, saved[2]);
+			printf("the leftovers are: %s\n", saved[2]);
+			printf("the buf now should only have the leftovers: %s\n", buf);
+		}
+	}
 	buf = ft_memalloc(BUFF_SIZE); //what you read into
-	while(read(fd, buf, (BUFF_SIZE - 1)) > 0)
+	while (read(fd, buf, (BUFF_SIZE - 1)) > 0)
 	{
 		len = get_line_length(buf);
 		if (len == BUFF_SIZE - 1)
