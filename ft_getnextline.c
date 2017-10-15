@@ -42,10 +42,9 @@ char	*expand_line(char *line)
 {
 	char	*expanded;
 
-	expanded = (char *)malloc(sizeof(char) * (ft_strlen(line) + BUFF_SIZE + 1));
+	expanded = ft_memalloc(ft_strlen(line) + BUFF_SIZE);
 	ft_strcpy(expanded, line);
-	// // printf("%s\n", expanded);
-	// free(line);
+	free(line);
 	return (expanded);
 }
 
@@ -68,19 +67,14 @@ int		get_next_line(const int fd, char **line)
 			}
 			else
 			{
-				line2 = (char *)malloc(sizeof(char) * ft_strlen(*line));
-				ft_strcpy(line2, *line);
-				free(*line);
-				*line = (char *)malloc(sizeof(char) * (ft_strlen(line2) + BUFF_SIZE + 1));
-				ft_strcpy(*line, line2);
 				ft_strncat(*line, buf, BUFF_SIZE);
-				printf("sizeof *line: %lu\n", sizeof(*line));
+				*line = expand_line(*line);
 				printf("line is: %s\n", *line);
 			}
 		}
 		else if (len < BUFF_SIZE - 1)
 		{
-			// *line = expand_line(*line); // commented out bc haven't tested but may be useful
+			*line = expand_line(*line); //why does this function work even w/o this line
 			printf("line right before: %s\n", *line);
 			ft_strncat(*line, buf, len);
 			printf("line right after: %s\n", *line);
