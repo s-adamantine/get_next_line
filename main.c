@@ -8,13 +8,14 @@
 int	main(int argc, char **argv)
 {
 	int		fd;
-	int		len;
-	int		offset;
-	char	buf[BUFF_SIZE];
 	char	**line;
 
 	line = ft_memalloc(1);
 	fd = open(argv[1], O_RDONLY);
+	if (argc != 2)
+		return (0);
+	// get_next_line(fd, line);
+	// printf("%s\n", *line);
 	while(get_next_line(fd, line) == 0)
 	{
 		printf("the next line is: %s\n", *line);

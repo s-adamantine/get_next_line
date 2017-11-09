@@ -10,89 +10,65 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
-	Current task: refactor check contents and add it
-	Next:
-*/
-
 #include "get_next_line.h"
 #include <stdio.h>
 
-char	**check_contents(char *line)
+static char	*recopy_buf(char *buf)
 {
-	char	**lines;
+	char	*new_buf;
 
-	if (*line == '\0')
-		return (NULL);
+	new_buf = ft_memalloc(BUFF_SIZE);
+	if (ft_strchr(buf, '\n'))
+		ft_strcpy(new_buf, ft_strchr(buf, '\n') + 1); //copy to the temp everything from buf after the first \n. FUCKING UP HERE
 	else
-		lines = ft_strsplit(line, '\n');
-	return (lines);
+		new_buf = NULL;
+	return (new_buf);
 }
 
-int		get_line_length(char *line)
+/*
+** copy from the beginning to a '\n'
+*/
+void	grab_substring(char **line, char *buf)
 {
-	int		len;
+	char	*substring;
 
-	len = 0;
-	while (line[len] && line[len] != '\n')
+	substring = ft_strnew(BUFF_SIZE); //because the largest size that you can possibly get into is buff size anyway.
+	//should I null terminate this? should I?
+	*line = substring;
+	while (*buf && *buf != '\n')
 	{
-		len++;
+		*substring++ = *buf++;
 	}
-	return (len);
-}
-
-char	*expand_line(char *line)
-{
-	char	*expanded;
-
-	expanded = ft_memalloc(ft_strlen(line) + BUFF_SIZE);
-	ft_strcpy(expanded, line);
-	free(line);
-	return (expanded);
 }
 
 int		get_next_line(const int fd, char **line)
 {
-	int			len;
-	char		**saved;
-	char		*temp;
 	static char	*buf;
 
-	*line = ft_memalloc(BUFF_SIZE); //result line
+	*line = ft_memalloc(BUFF_SIZE);
 	if (buf)
 	{
-		printf("buf exists. it contains:%s\n", buf);
-		saved = check_contents(buf);
-		printf("saved[1] exists. it contains: %s\n", saved[1]);
-		ft_strcpy(*line, saved[1]);
-		if (ft_strcpy)
-		if (saved[2])
+		if (ft_strchr(buf, '\n'))
 		{
-			ft_strcpy(buf, saved[2]);
-			printf("the leftovers are: %s\n", saved[2]);
-			printf("the buf now should only have the leftovers: %s\n", buf);
+			grab_substring(line, buf);
+			buf = recopy_buf(buf);
+			return (0);
+		}
+		else
+		{
+			grab_substring(line, buf);
+			buf = recopy_buf(buf);
+			return (0);
 		}
 	}
-	buf = ft_memalloc(BUFF_SIZE); //what you read into
-	while (read(fd, buf, (BUFF_SIZE - 1)) > 0)
+	buf = ft_memalloc(BUFF_SIZE + 1);
+	while (read(fd, buf, BUFF_SIZE) > 0) //while you can read
 	{
-		len = get_line_length(buf);
-		if (len == BUFF_SIZE - 1)
+		printf("buf: %s\n", buf);
+		if (ft_strchr(buf, '\n'))
 		{
-			if (ft_strlen(*line) == 0) 	//the beginning of *line
-			{
-				ft_strcat(*line, buf);
-			}
-			else
-			{
-				*line = expand_line(*line);
-				ft_strcat(*line, buf);
-			}
-		}
-		else if (len < BUFF_SIZE - 1)
-		{
-			*line = expand_line(*line); //why does this function work even w/o this line
-			ft_strncat(*line, buf, len);
+			grab_substring(line, buf);
+			buf = recopy_buf(buf);
 			return (0);
 		}
 	}
