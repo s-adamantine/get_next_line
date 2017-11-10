@@ -15,10 +15,13 @@
 
 void   		expand_line(char **line)
 {
+	char	*old_line;
 	char	*expanded;
 
+	old_line = *line;
 	expanded = ft_strnew(ft_strlen(*line) + BUFF_SIZE); //strnew vs memalloc hmm one possible extra byte
 	ft_strcpy(expanded, *line);
+	free(old_line);
 	*line = expanded;
 }
 
@@ -28,31 +31,38 @@ void   		expand_line(char **line)
 char	*transfer(char **line, char *buf)
 {
 	int		i;
-	char	*substring;
-	char	*new_buf;
+	int		j;
+	char	*grab;
 
 	i = 0;
-	substring = ft_strnew(BUFF_SIZE);
-	new_buf = ft_strnew(BUFF_SIZE);
-	while (*buf && *buf != '\n')
+	j = 0;
+	grab = ft_strnew(BUFF_SIZE);
+	while (buf[i] && buf[i] != '\n')
 	{
-		substring[i++] = *buf++;
+		grab[i] = buf[i];
+		i++;
 	}
-	ft_strcat(*line, substring);
+	ft_strcat(*line, grab);
 	if (ft_strchr(buf, '\n'))
-		ft_strcpy(new_buf, ft_strchr(buf, '\n') + 1);
+	{
+		i++;
+		while (buf[i])
+			buf[j++] = buf[i++];
+		buf[j] = '\0';
+	}
 	else
-		ft_bzero(new_buf, BUFF_SIZE);
-	return (new_buf);
+		ft_bzero(buf, BUFF_SIZE);
+	free(grab);
+	return (buf);
 }
 
 int		get_next_line(const int fd, char **line)
 {
 	static char	*buf;
 
-	*line = ft_memalloc(BUFF_SIZE);
-	if (fd < 0)
+	if (fd < 0 || !line)
 		return (-1);
+	*line = ft_memalloc(BUFF_SIZE);
 	if (buf)
 	{
 		buf = transfer(line, buf);
@@ -61,7 +71,8 @@ int		get_next_line(const int fd, char **line)
 		else
 			return (1);
 	}
-	buf = ft_strnew(BUFF_SIZE);
+	else
+		buf = ft_strnew(BUFF_SIZE);
 	while (read(fd, buf, BUFF_SIZE) > 0)
 	{
 		buf = transfer(line, buf);
