@@ -27,8 +27,9 @@ void   		expand_line(char **line)
 
 /*
 ** grabs characters from the buffer to line (until a \n) and clears off grabbed characters from buffer.
+** returns 1 if a line is read, 0 if you need to read more characters.
 */
-char	*transfer(char **line, char *buf)
+int	transfer(char **line, char *buf)
 {
 	int		i;
 	int		j;
@@ -43,17 +44,18 @@ char	*transfer(char **line, char *buf)
 		i++;
 	}
 	ft_strcat(*line, grab);
+	free(grab);
 	if (ft_strchr(buf, '\n'))
 	{
 		i++;
 		while (buf[i])
 			buf[j++] = buf[i++];
 		buf[j] = '\0';
+		return (1);
 	}
-	else
-		ft_bzero(buf, BUFF_SIZE);
-	free(grab);
-	return (buf);
+	ft_bzero(buf, BUFF_SIZE);
+	expand_line(line);
+	return (0);
 }
 
 int		get_next_line(const int fd, char **line)
@@ -63,22 +65,13 @@ int		get_next_line(const int fd, char **line)
 	if (fd < 0 || !line)
 		return (-1);
 	*line = ft_memalloc(BUFF_SIZE);
-	if (buf)
-	{
-		buf = transfer(line, buf);
-		if (!*buf)
-			expand_line(line);
-		else
-			return (1);
-	}
+	if (buf && transfer(line, buf))
+		return (1);
 	else
 		buf = ft_strnew(BUFF_SIZE);
 	while (read(fd, buf, BUFF_SIZE) > 0)
 	{
-		buf = transfer(line, buf);
-		if (!*buf)
-			expand_line(line);
-		else
+		if (transfer(line, buf))
 			return (1);
 	}
 	if (**line)
