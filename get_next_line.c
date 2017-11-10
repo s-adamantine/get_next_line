@@ -17,38 +17,34 @@ void   		expand_line(char **line)
 {
 	char	*expanded;
 
-	expanded = ft_memalloc(ft_strlen(*line) + BUFF_SIZE); //is it a good idea to do buff size or buff size + 1
+	expanded = ft_strnew(ft_strlen(*line) + BUFF_SIZE); //strnew vs memalloc hmm one possible extra byte
 	ft_strcpy(expanded, *line);
+	//probably need to free something here.
 	*line = expanded;
 }
 
-static char	*recopy_buf(char *buf)
-{
-	char	*new_buf;
-
-	new_buf = ft_memalloc(BUFF_SIZE);
-	if (ft_strchr(buf, '\n'))
-		ft_strcpy(new_buf, ft_strchr(buf, '\n') + 1); //copy to the temp everything from buf after the first \n. FUCKING UP HERE
-	else
-		new_buf = NULL;
-	return (new_buf);
-}
-
 /*
-** copy from the beginning to a '\n'
+** grabs characters from the buffer to line (until a \n) and clears off grabbed characters from buffer.
 */
-void	grab_substring(char **line, char *buf)
+char	*transfer(char **line, char *buf)
 {
 	int		i;
-	char	*substring;
+	char	*add;
+	char	*new_buf;
 
 	i = 0;
-	substring = ft_strnew(BUFF_SIZE);
+	add = ft_strnew(BUFF_SIZE);
+	new_buf = ft_strnew(BUFF_SIZE);
 	while (*buf && *buf != '\n')
 	{
-		substring[i++] = *buf++;
+		add[i++] = *buf++;
 	}
-	ft_strcat(*line, substring);
+	ft_strcat(*line, add);
+	if (ft_strchr(buf, '\n'))
+		ft_strcpy(new_buf, ft_strchr(buf, '\n') + 1); //copy to the temp everything from buf after the first \n.
+	else
+		ft_bzero(new_buf, BUFF_SIZE);
+	return (new_buf);
 }
 
 int		get_next_line(const int fd, char **line)
@@ -58,36 +54,20 @@ int		get_next_line(const int fd, char **line)
 	*line = ft_memalloc(BUFF_SIZE);
 	if (buf)
 	{
-		if (ft_strchr(buf, '\n'))
-		{
-			grab_substring(line, buf);
-			buf = recopy_buf(buf);
-			return (1);
-		}
-		else
-		{
-			grab_substring(line, buf);
-			buf = recopy_buf(buf);
+		buf = transfer(line, buf);
+		if (!*buf)
 			expand_line(line);
-		}
+		else
+			return (1);
 	}
 	buf = ft_strnew(BUFF_SIZE);
-	while (read(fd, buf, BUFF_SIZE) > 0) //while you can read
+	while (read(fd, buf, BUFF_SIZE) > 0)
 	{
-		if (ft_strchr(buf, '\n'))
-		{
-			grab_substring(line, buf);
-			buf = recopy_buf(buf);
-			return (1);
-		}
-		else
-		{
-			grab_substring(line, buf);
-			buf = recopy_buf(buf);
+		buf = transfer(line, buf);
+		if (!*buf)
 			expand_line(line);
-		}
-		free(buf);
-		buf = ft_memalloc(BUFF_SIZE + 1);
+		else
+			return (1);
 	}
-	return (-1);
+	return (0);
 }
