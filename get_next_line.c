@@ -13,6 +13,15 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
+void   		expand_line(char **line)
+{
+	char	*expanded;
+
+	expanded = ft_memalloc(ft_strlen(*line) + BUFF_SIZE); //is it a good idea to do buff size or buff size + 1
+	ft_strcpy(expanded, *line);
+	*line = expanded;
+}
+
 static char	*recopy_buf(char *buf)
 {
 	char	*new_buf;
@@ -30,15 +39,16 @@ static char	*recopy_buf(char *buf)
 */
 void	grab_substring(char **line, char *buf)
 {
+	int		i;
 	char	*substring;
 
-	substring = ft_strnew(BUFF_SIZE); //because the largest size that you can possibly get into is buff size anyway.
-	//should I null terminate this? should I?
-	*line = substring;
+	i = 0;
+	substring = ft_strnew(BUFF_SIZE);
 	while (*buf && *buf != '\n')
 	{
-		*substring++ = *buf++;
+		substring[i++] = *buf++;
 	}
+	ft_strcat(*line, substring);
 }
 
 int		get_next_line(const int fd, char **line)
@@ -52,25 +62,32 @@ int		get_next_line(const int fd, char **line)
 		{
 			grab_substring(line, buf);
 			buf = recopy_buf(buf);
-			return (0);
+			return (1);
 		}
 		else
 		{
 			grab_substring(line, buf);
 			buf = recopy_buf(buf);
-			return (0);
+			expand_line(line);
 		}
 	}
-	buf = ft_memalloc(BUFF_SIZE + 1);
+	buf = ft_strnew(BUFF_SIZE);
 	while (read(fd, buf, BUFF_SIZE) > 0) //while you can read
 	{
-		printf("buf: %s\n", buf);
 		if (ft_strchr(buf, '\n'))
 		{
 			grab_substring(line, buf);
 			buf = recopy_buf(buf);
-			return (0);
+			return (1);
 		}
+		else
+		{
+			grab_substring(line, buf);
+			buf = recopy_buf(buf);
+			expand_line(line);
+		}
+		free(buf);
+		buf = ft_memalloc(BUFF_SIZE + 1);
 	}
 	return (-1);
 }
