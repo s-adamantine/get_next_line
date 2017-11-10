@@ -40,7 +40,7 @@ char	*transfer(char **line, char *buf)
 	}
 	ft_strcat(*line, substring);
 	if (ft_strchr(buf, '\n'))
-		ft_strcpy(new_buf, ft_strchr(buf, '\n') + 1); //copy to the temp everything from buf after the first \n. FUCKING UP HERE
+		ft_strcpy(new_buf, ft_strchr(buf, '\n') + 1);
 	else
 		ft_bzero(new_buf, BUFF_SIZE);
 	return (new_buf);
@@ -55,30 +55,20 @@ int		get_next_line(const int fd, char **line)
 		return (-1);
 	if (buf)
 	{
-		if (ft_strchr(buf, '\n'))
-		{
-			buf = transfer(line, buf);
-			return (1);
-		}
-		else
-		{
-			buf = transfer(line, buf);
+		buf = transfer(line, buf);
+		if (!*buf)
 			expand_line(line);
-		}
+		else
+			return (1);
 	}
 	buf = ft_strnew(BUFF_SIZE);
-	while (read(fd, buf, BUFF_SIZE) > 0) //while you can read
+	while (read(fd, buf, BUFF_SIZE) > 0)
 	{
-		if (ft_strchr(buf, '\n'))
-		{
-			buf = transfer(line, buf);
-			return (1);
-		}
-		else
-		{
-			buf = transfer(line, buf);
+		buf = transfer(line, buf);
+		if (!*buf)
 			expand_line(line);
-		}
+		else
+			return (1);
 	}
 	if (**line)
 		return (1);
