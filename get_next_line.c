@@ -60,6 +60,7 @@ int	transfer(char **line, char *buf)
 
 int		get_next_line(const int fd, char **line)
 {
+	int			r;
 	static char	*buf;
 
 	if (fd < 0 || !line)
@@ -69,11 +70,13 @@ int		get_next_line(const int fd, char **line)
 		return (1);
 	else
 		buf = ft_strnew(BUFF_SIZE);
-	while (read(fd, buf, BUFF_SIZE) > 0)
+	while ((r = read(fd, buf, BUFF_SIZE)) > 0)
 	{
 		if (transfer(line, buf))
 			return (1);
 	}
+	if (r < 0)
+		return (-1);
 	if (**line)
 		return (1);
 	return (0);
