@@ -1,22 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sadamant <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/21 12:22:24 by sadamant          #+#    #+#             */
-/*   Updated: 2017/11/21 12:22:54 by sadamant         ###   ########.fr       */
+/*   Created: 2017/09/08 13:34:34 by sadamant          #+#    #+#             */
+/*   Updated: 2017/09/08 18:23:01 by sadamant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
-# define BUFF_SIZE 30
-# include <unistd.h>
-# include <fcntl.h>
-# include "libft.h"
+#include "libft.h"
+#include <stdio.h>
 
-int	get_next_line(const int fd, char **line);
+void	*ft_memcpy(void *dest, const void *src, size_t n)
+{
+	void *destcpy;
 
-#endif
+	destcpy = dest;
+	while (n-- > 0)
+	{
+		*(char *)dest++ = *(char *)src++;
+	}
+	return (destcpy);
+}

@@ -1,2 +1,0 @@
-starting line.
-this is a really long line that's supposed to go past the buffer size about five million times before it finally returns whatever is inside of it. should I keep going? probably. alright that's enough now.

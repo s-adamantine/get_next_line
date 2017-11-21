@@ -6,30 +6,32 @@
 /*   By: sadamant <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/10 19:54:09 by sadamant          #+#    #+#             */
-/*   Updated: 2017/10/10 19:54:17 by sadamant         ###   ########.fr       */
+/*   Updated: 2017/11/21 12:00:38 by sadamant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
 
-void   		expand_line(char **line)
+void	expand(char **line)
 {
 	char	*old_line;
 	char	*expanded;
 
 	old_line = *line;
-	expanded = ft_strnew(ft_strlen(*line) + BUFF_SIZE); //strnew vs memalloc hmm one possible extra byte
+	expanded = ft_strnew(ft_strlen(*line) + BUFF_SIZE);
 	ft_strcpy(expanded, *line);
 	free(old_line);
 	*line = expanded;
 }
 
 /*
-** grabs characters from the buffer to line (until a \n) and clears off grabbed characters from buffer.
+** grabs characters from the buffer to line (until a \n) and clears off
+** grabbed characters from buffer.
 ** returns 1 if a line is read, 0 if you need to read more characters.
 */
-int	transfer(char **line, char *buf)
+
+int		transfer(char **line, char *buf)
 {
 	int		i;
 	int		j;
@@ -54,7 +56,7 @@ int	transfer(char **line, char *buf)
 		return (1);
 	}
 	ft_bzero(buf, BUFF_SIZE);
-	expand_line(line);
+	expand(line);
 	return (0);
 }
 
@@ -71,10 +73,8 @@ int		get_next_line(const int fd, char **line)
 	else
 		buf = ft_strnew(BUFF_SIZE);
 	while ((r = read(fd, buf, BUFF_SIZE)) > 0)
-	{
 		if (transfer(line, buf))
 			return (1);
-	}
 	if (r < 0)
 		return (-1);
 	if (**line)
